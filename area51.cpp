@@ -358,7 +358,7 @@ class NodeListaCircular
 
         NodeListaCircular <dado>* Next;
 
-        static NodeListaCircular <dado>* MontaNode()
+        static NodeListaCircular <dado>* MontaNode(int id)
         {
             NodeListaCircular <dado>* P = new NodeListaCircular <dado>;
 
@@ -366,7 +366,9 @@ class NodeListaCircular
             {
                 P -> Next = P -> Prev = NULL;
 
-                P -> idJogador = P -> pontuacao = 0;
+                P -> idJogador = id;
+
+                P -> pontuacao = 0;
             }
 
             return P;
@@ -416,10 +418,10 @@ class Lista_DE_Circular
             delete it;
         }
 
-        bool push()
+        bool push(int id)
         {
             //adicionar na frente da lista
-            it = NodeListaCircular <dado> :: MontaNode();
+            it = NodeListaCircular <dado> :: MontaNode(id);
 
             if(!it)
             {
@@ -540,7 +542,7 @@ class Jogo
 
             for(int i = 1; i <= numeroJogadores; i++)
             {
-                Jogadores.push();
+                Jogadores.push(i);
             }
         }
 
@@ -583,7 +585,25 @@ class Jogo
             
             DistribuicaoCartas();
             
-            
+            while(Jogadores.size() > 1)
+            {
+               if(Jogadores.it->mao.empty())
+                {
+                    //final de uma partida, ou seja, um jogador não possuei cartas
+                    int idJogadorSemCartas = Jogadores.it->idJogador;
+
+                    do
+                    {
+                        cout << idJogadorSemCartas << '\n';
+
+                        ++Jogadores;
+
+                    } 
+                    while (idJogadorSemCartas != Jogadores.it->idJogador);
+                    
+                    
+                }
+            }
         }
 };
 
