@@ -2,6 +2,140 @@
 
 using namespace std;
 
+template <typename dado> 
+
+class NodeStack
+{
+    public:
+
+        dado D;
+
+        NodeStack <dado>* Next;
+
+        static NodeStack <dado>* MontaNode(dado d)
+        {
+            NodeStack <dado>* p = new NodeStack <dado>;
+
+            if(p)
+            {
+                p -> D = d;
+
+                p -> Next = NULL;
+            }
+
+            return p;
+        }
+        
+        static void DesmontaNode(NodeStack <dado>* p)
+        {
+            delete p;
+        }
+};
+
+template <typename dado> 
+
+class Stack
+{
+    NodeStack <dado>* top;
+
+    int quantNodes;
+
+    public:
+
+        Stack()
+        {
+            top = NULL;
+
+            quantNodes = 0;
+        }
+
+        ~Stack()
+        {
+            NodeStack <dado>* P;
+
+            while(top)
+            {
+                P = top;
+
+                top = top -> Next;
+
+                delete P;
+            }
+        }
+
+        bool Push(dado d)
+        {
+            NodeStack <dado>* P = NodeStack <dado> :: MontaNode(d);
+
+            if(P)
+            {
+                P -> Next = top;
+
+                top = P;
+
+                quantNodes++;
+
+                return true; 
+            }
+
+            return false;
+        }
+
+        void Pop()
+        {
+            if(top)
+            {
+                NodeStack <dado>* P = top;
+                
+                top = top -> Next;
+
+                delete P;
+
+                quantNodes--;
+            }
+        }
+
+        dado Top()
+        {
+            dado d;
+
+            if(top)
+            {
+                d = top -> D;
+            }
+
+            return d;
+        }
+
+        bool Empty()
+        {
+            return !top;
+        }
+
+        int size()
+        {
+            return quantNodes;
+        }
+
+        void clear()
+        {
+            if(!top)
+            {
+                quantNodes = 0;
+
+                return;
+            }
+
+            NodeStack <dado>* P = top;
+
+            top = top -> Next;
+
+            delete P;
+
+            return clear();
+        }
+};
+
 template <typename dado>
 
 class NodeLista
@@ -83,19 +217,21 @@ class Lista_Duplamente_Encadeada
 
             if (!Head)
             {
-                Head = It = P -> Next = P -> Prev = P;
+                Head = It = P;
             }
             else
             {
-                P -> Prev = Head -> Prev;
+                P -> Prev = It;
 
-                P -> Next = Head;
+                P -> Next = It -> Next;
 
-                (Head -> Prev) -> Next = P;
+                It -> Next = P;
 
-                Head -> Prev = P;
-
-                Head = P;
+                if(P -> Next)
+                {
+                    (P -> Next) -> Prev = P;
+                    
+                }
             }
 
             quantidadeNodes++;
@@ -112,12 +248,12 @@ class Lista_Duplamente_Encadeada
 
             It = It -> Next;
 
-            while (It != Head and (It -> D) != x)
+            while (!It and (It -> Dado) != x)
             {
                 It = It -> Next;
             }
             
-            if ((It -> D) == x)
+            if ((It -> Dado) == x)
             {
                 return true;
             }
@@ -143,8 +279,10 @@ class Lista_Duplamente_Encadeada
         pair<bool,dado> get()
         {
             dado x;
+            
+            // cout << It -> Dado << endl;
 
-            if(!It)
+            if(It)
             {
                 return {true, It -> Dado};
             }
@@ -190,24 +328,72 @@ class Lista_Duplamente_Encadeada
         {
             return quantidadeNodes;
         }
+        
+        void all()
+        {
+            It = Head;
+            
+            while(It)
+            {
+                cout << It -> Dado << '\n';
+                
+                It = It -> Next;
+            }
+        }
 };
+
+template <typename dado>
+
+class NodeListaCircular
+{
+    public:
+
+        Lista_Duplamente_Encadeada <dado> mao;
+
+        int idJogador;
+
+        int pontuacao;
+
+        NodeListaCircular <dado>* Prev;
+
+        NodeListaCircular <dado>* Next;
+
+        static NodeListaCircular <dado>* MontaNode()
+        {
+            NodeListaCircular <dado>* P = new NodeListaCircular <dado>;
+
+            if(P)
+            {
+                P -> Next = P -> Prev = NULL;
+
+                P -> idJogador = P -> pontuacao = 0;
+            }
+
+            return P;
+        }
+
+        static void DesmontaNode(NodeListaCircular <dado>* P)
+        {
+            delete P;
+        }
+};
+
 
 template <typename dado>
 
 class Lista_DE_Circular
 {
-    NodeLista <dado>* Head;
-
-    NodeLista <dado>* it;
-
-    int quantidadeNode;
-   
     public:
+
+        NodeListaCircular <dado>* Head;
+
+        NodeListaCircular <dado>* it;
+
+        int quantidadeNode;
 
         Lista_DE_Circular()
         {
-            Head = NULL;
-            it = NULL;
+            Head = it = NULL;
 
             quantidadeNode = 0;
         }
@@ -230,10 +416,10 @@ class Lista_DE_Circular
             delete it;
         }
 
-        bool push(dado d)
+        bool push()
         {
             //adicionar na frente da lista
-            it = NodeLista <dado> :: MontaNode(d);
+            it = NodeListaCircular <dado> :: MontaNode();
 
             if(!it)
             {
@@ -299,10 +485,10 @@ class Lista_DE_Circular
             }
         }
 
-        dado get()
-        {
-            return it -> Dado;
-        }
+        // dado get()
+        // {
+        //     return it -> Dado;
+        // }
 
         void operator++()
         {
@@ -331,24 +517,79 @@ class Lista_DE_Circular
         }
 };
 
+template <typename dado>
 
-class t
+class Jogo
 {
+    int numeroJogadores;
+
+    Stack <dado> monte,
+                 lixo;
+                 
+    bool sentido = true;
+        // true -> horario
+        // false -> anti-horario
+
+    Lista_DE_Circular <dado> Jogadores;
+
     public:
 
-        Lista_Duplamente_Encadeada <string> a;
+        Jogo()
+        {
+            cin >> numeroJogadores;
+
+            for(int i = 1; i <= numeroJogadores; i++)
+            {
+                Jogadores.push();
+            }
+        }
+
+        void LeituraCartas()
+        {
+            string cartaAuxiliar;
+
+            for(int i = 0; i < 104; i++)
+            {
+                cin >> cartaAuxiliar;
+
+                monte.Push(cartaAuxiliar);
+            }
+        }
+
+        void DistribuicaoCartas()
+        {
+            // no incio do jogo, cada jogador recebera 5 cartas
+
+            Jogadores.begin();
+
+            for(int i = 0; i < numeroJogadores; i++)
+            {
+                for(int j = 0; j < 5; j++)
+                {
+                    Jogadores.it->mao.insert(monte.Top());
+
+                    monte.Pop();
+                }
+
+                ++Jogadores;
+            }
+        }
+
+        void run()
+        {
+            LeituraCartas();
+            
+            Jogadores.begin();
+            
+            DistribuicaoCartas();
+            
+            
+        }
 };
 
 int main()
 {
-    Lista_DE_Circular < t > teste;
+    Jogo <string> j;
 
-    t tt;
-
-    tt.a.insert("01");
-    tt.a.insert("02");
-
-    tt.a.begin();
-    cout << tt.a.get().second << endl;
-    // teste.push(t);
+    j.run();
 }
