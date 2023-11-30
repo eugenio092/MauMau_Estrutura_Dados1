@@ -583,51 +583,51 @@ class Jogo
             
             DistribuicaoCartas();
             
-            // while(Jogadores.size() > 1)
-            // {
-            //   if(Jogadores.it->mao.empty())
-            //     {
-            //         //final de uma partida, ou seja, um jogador não possuei cartas
-            //         int idJogadorSemCartas = Jogadores.it->idJogador;
+            while(Jogadores.size() > 1)
+            {
+              if(Jogadores.it->mao.empty())
+                {
+                    //final de uma partida, ou seja, um jogador não possuei cartas
+                    int idJogadorSemCartas = Jogadores.it->idJogador;
 
-            //         pair <int, int> auxMaximo = {0, 0};
-            //         // pontuação, id
+                    pair <int, int> auxMaximo = {0, 0};
+                    // pontuação, id
 
-            //         do
-            //         {
-            //             if(Jogadores.it->idJogador != idJogadorSemCartas and Jogadores.it->pontuacao > auxMaximo.first)
-            //             {
-            //                 auxMaximo = {Jogadores.it->pontuacao, Jogadores.it->idJogador};
-            //             }
+                    do
+                    {
+                        if(Jogadores.it->idJogador != idJogadorSemCartas and Jogadores.it->pontuacao > auxMaximo.first)
+                        {
+                            auxMaximo = {Jogadores.it->pontuacao, Jogadores.it->idJogador};
+                        }
 
-            //             ++Jogadores;
+                        ++Jogadores;
 
-            //         } 
-            //         while (idJogadorSemCartas != Jogadores.it->idJogador);
+                    } 
+                    while (idJogadorSemCartas != Jogadores.it->idJogador);
 
-            //         while(Jogadores.it->idJogador != auxMaximo.second)
-            //         {
-            //             ++Jogadores;
-            //         }
+                    while(Jogadores.it->idJogador != auxMaximo.second)
+                    {
+                        ++Jogadores;
+                    }
                     
-            //         Jogadores.pop();
+                    Jogadores.pop();
 
-            //         do
-            //         {
-            //             if(Jogadores.it->idJogador != idJogadorSemCartas and Jogadores.it->pontuacao > auxMaximo.first)
-            //             {
-            //                 auxMaximo = {Jogadores.it->pontuacao, Jogadores.it->idJogador};
-            //             }
+                    do
+                    {
+                        if(Jogadores.it->idJogador != idJogadorSemCartas and Jogadores.it->pontuacao > auxMaximo.first)
+                        {
+                            auxMaximo = {Jogadores.it->pontuacao, Jogadores.it->idJogador};
+                        }
 
-            //             ++Jogadores;
+                        ++Jogadores;
 
-            //         } 
-            //         while (idJogadorSemCartas != Jogadores.it->idJogador);
+                    } 
+                    while (idJogadorSemCartas != Jogadores.it->idJogador);
 
-            //         //recomeçar partida
-            //         //      redistribuir as 5 cartas para os jogadores restantes
-            //     }
-            // }
+                    //recomeçar partida
+                    //      redistribuir as 5 cartas para os jogadores restantes
+                }
+            }
         }
 };
 
