@@ -138,100 +138,90 @@ class Stack
 
 template <typename dado>
 
-class NodeLista
+class Node
 {
     public:
+    dado Dado;
 
-        dado Dado;
+    Node <dado>* Next;
 
-        NodeLista <dado>* Prev;
+    Node <dado>* Prev;
 
-        NodeLista <dado>* Next;
+    static Node<dado> *MontaNo(dado d)
+    {
+        Node <dado>* p = new Node <dado>;
 
-        static NodeLista <dado>* MontaNode(dado d)
+        if (p)
         {
-            NodeLista <dado>* P = new NodeLista <dado>;
+            p -> Dado = d;
 
-            if(P)
-            {
-                P -> Next = P -> Prev = NULL;
-
-                P -> Dado = d;
-            }
-
-            return P;
+            p -> Next = p -> Prev = NULL;
         }
-
-        static void DesmontaNode(NodeLista <dado>* P)
-        {
-            delete P;
-        }
+        return p;
+    }
+    static void DesmontaNo(Node <dado>* p)
+    {
+        delete p;
+    }
 };
 
 template <typename dado>
 
 class Lista_Duplamente_Encadeada
 {
+    Node <dado>* Head;
+
+    Node <dado>* It;
+
     int quantidadeNodes;
-
-    NodeLista <dado>* Head;
-
-    NodeLista <dado>* It;
 
     public:
 
         Lista_Duplamente_Encadeada()
-        {   
+        {
             Head = It = NULL;
-
+            
             quantidadeNodes = 0;
         }
 
         ~Lista_Duplamente_Encadeada()
         {
-            NodeLista <dado>* current = Head;
+            Node <dado>* P = Head;
 
-            NodeLista <dado>* next = NULL;
-
-            if(!current)
+            while(Head)
             {
-                return;
+                P = Head -> Next;
+
+                delete Head;
+
+                Head = P;
+
+                quantidadeNodes--;
             }
-
-            do
-            {
-                next = current -> Next;
-            } 
-            while(current != Head);
-            
         }
 
-        bool insert(dado x)
+        bool push(dado d)
         {
-            NodeLista <dado>* P = NodeLista <dado> :: MontaNode(x);
+            Node <dado>* P = Node <dado> :: MontaNo(d);
 
-            if (!P)
+            if(!P)
             {
                 return false;
             }
 
-            if (!Head)
+            if(!Head)
             {
-                Head = It = P;
+                P -> Prev = P -> Next = Head = It = P;
             }
             else
             {
-                P -> Prev = It;
+                P -> Prev = Head -> Prev;
 
-                P -> Next = It -> Next;
+                P -> Next = Head;
 
-                It -> Next = P;
-
-                if(P -> Next)
-                {
-                    (P -> Next) -> Prev = P;
-                    
-                }
+                (Head -> Prev) -> Next = P;
+                
+                Head -> Prev = P;
             }
 
             quantidadeNodes++;
@@ -239,31 +229,41 @@ class Lista_Duplamente_Encadeada
             return true;
         }
 
-        bool search(dado x)
+        void erase()
         {
-            if (!Head)
+            if (Head)
             {
-                return false;
-            }
+                if (Head == Head -> Next)
+                {
+                    delete It;
 
-            It = It -> Next;
+                    Head = It = NULL;
 
-            while (!It and (It -> Dado) != x)
-            {
-                It = It -> Next;
-            }
-            
-            if ((It -> Dado) == x)
-            {
-                return true;
-            }
+                    quantidadeNodes = 0;
+                }
+                else
+                {
+                    (It -> Prev) -> Next = It -> Next;
 
-            return false; 
+                    (It -> Next) -> Prev = It -> Prev;
+
+                    if (Head == It)
+                    {
+                        Head = It -> Next;
+                    }
+
+                    delete It;
+
+                    It = Head;
+
+                    quantidadeNodes--;
+                }
+            }
         }
 
-        bool empty()
+        int size()
         {
-            return !Head;
+            return quantidadeNodes;
         }
 
         void begin()
@@ -271,73 +271,47 @@ class Lista_Duplamente_Encadeada
             It = Head;
         }
 
-        void operator++()
+        dado get()
         {
-            It = It -> Next;
-        }
-
-        pair<bool,dado> get()
-        {
-            dado x;
-            
-            // cout << It -> Dado << endl;
+            dado d;
 
             if(It)
             {
-                return {true, It -> Dado};
+                d = It -> Dado;
             }
 
-            return {false, x};
+            return d;
         }
 
-        void erase()
+        void operator++()
         {
-            if (!Head)
-            {
-                return;
-            }
-
-            NodeLista <dado>* Aux = It;
-
-            if (It -> Next != It)
-            {
-                (It -> Next) -> Prev = It -> Prev;
-
-                (It -> Prev) -> Next = It -> Next;
-            }
-            else
-            {
-                Head = NULL;
-            }
-
-            if (Head == It)
-            {
-                Head = It = It -> Next;
-            }
-            else
+            if(It and It -> Next)
             {
                 It = It -> Next;
             }
-
-            delete Aux;
-
-            quantidadeNodes--;
         }
 
-        int size()
+        void operator--()
         {
-            return quantidadeNodes;
+            if(It and It -> Prev)
+            {
+                It = It -> Prev;
+            }
+            
         }
-        
-        void all()
+
+        void clear()
         {
             It = Head;
-            
+
             while(It)
             {
-                cout << It -> Dado << '\n';
-                
-                It = It -> Next;
+                erase();
+
+                if(It and It -> Next)
+                {
+                    It = It -> Next;
+                }
             }
         }
 };
@@ -517,6 +491,18 @@ class Lista_DE_Circular
             //verdadeiro se estiver vazia
             return !Head;
         }
+
+        void all()
+        {
+            NodeListaCircular <dado>* P = it;
+            
+            it = it -> Next;
+
+            while(P != it)
+            {
+                it->mao.clear();
+            }
+        }
 };
 
 template <typename dado>
@@ -546,6 +532,11 @@ class Jogo
             }
         }
 
+        int pontuacao(string c)
+        {
+            return c[0] - 64;
+        }
+
         void LeituraCartas()
         {
             string cartaAuxiliar;
@@ -568,10 +559,17 @@ class Jogo
             {
                 for(int j = 0; j < 5; j++)
                 {
-                    Jogadores.it->mao.insert(monte.Top());
+                    string aux = monte.Top();
+
+                    Jogadores.it->pontuacao += pontuacao(aux);
+
+                    Jogadores.it->mao.push(aux);
 
                     monte.Pop();
                 }
+                
+                cout << "Id: " << Jogadores.it->idJogador << endl
+                     << "Cartas: " << Jogadores.it->mao.size() << endl << endl;
 
                 ++Jogadores;
             }
@@ -585,25 +583,51 @@ class Jogo
             
             DistribuicaoCartas();
             
-            while(Jogadores.size() > 1)
-            {
-               if(Jogadores.it->mao.empty())
-                {
-                    //final de uma partida, ou seja, um jogador não possuei cartas
-                    int idJogadorSemCartas = Jogadores.it->idJogador;
+            // while(Jogadores.size() > 1)
+            // {
+            //   if(Jogadores.it->mao.empty())
+            //     {
+            //         //final de uma partida, ou seja, um jogador não possuei cartas
+            //         int idJogadorSemCartas = Jogadores.it->idJogador;
 
-                    do
-                    {
-                        cout << idJogadorSemCartas << '\n';
+            //         pair <int, int> auxMaximo = {0, 0};
+            //         // pontuação, id
 
-                        ++Jogadores;
+            //         do
+            //         {
+            //             if(Jogadores.it->idJogador != idJogadorSemCartas and Jogadores.it->pontuacao > auxMaximo.first)
+            //             {
+            //                 auxMaximo = {Jogadores.it->pontuacao, Jogadores.it->idJogador};
+            //             }
 
-                    } 
-                    while (idJogadorSemCartas != Jogadores.it->idJogador);
+            //             ++Jogadores;
+
+            //         } 
+            //         while (idJogadorSemCartas != Jogadores.it->idJogador);
+
+            //         while(Jogadores.it->idJogador != auxMaximo.second)
+            //         {
+            //             ++Jogadores;
+            //         }
                     
-                    
-                }
-            }
+            //         Jogadores.pop();
+
+            //         do
+            //         {
+            //             if(Jogadores.it->idJogador != idJogadorSemCartas and Jogadores.it->pontuacao > auxMaximo.first)
+            //             {
+            //                 auxMaximo = {Jogadores.it->pontuacao, Jogadores.it->idJogador};
+            //             }
+
+            //             ++Jogadores;
+
+            //         } 
+            //         while (idJogadorSemCartas != Jogadores.it->idJogador);
+
+            //         //recomeçar partida
+            //         //      redistribuir as 5 cartas para os jogadores restantes
+            //     }
+            // }
         }
 };
 
